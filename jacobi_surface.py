@@ -1,6 +1,7 @@
 import numpy as np
 import sys, os
 import OpenGL.GL as gl
+import vispy
 from vispy import app, scene, visuals, gloo, io
 from vispy.visuals import transforms
 from vispy.visuals.line import line
@@ -23,6 +24,8 @@ automated = False
 render    = False
 color_green = (0.0, 1.0, 0.0, 1.0)
 color_red   = (1.0, 0.0, 0.0, 1.0)
+
+freeze_version = ('0.5' in vispy.__version__) # temp hack ... ugly
 
 
 ### Jacobi surface equation (iso surface when jsurface(i, j, k) = 0)
@@ -81,7 +84,8 @@ class StarVisual(visuals.Visual):
         self._draw_mode = 'points'
         self.shared_program.vert['position'] = self.vbo
 
-        self.freeze()
+        if freeze_version:
+            self.freeze()
         
 
     def _prepare_transforms(self, view):
@@ -134,7 +138,9 @@ TrailMesh = scene.visuals.create_visual_node(TrailVisual)
 class JacobiDemoCanvas(scene.SceneCanvas):
     def __init__(self):
         scene.SceneCanvas.__init__(self, keys='interactive', size=(1280, 720), bgcolor='w')
-        self.unfreeze()
+
+        if freeze_version:
+            self.unfreeze()
         
         self.view = self.central_widget.add_view()
         
