@@ -25,9 +25,6 @@ render    = False
 color_green = (0.0, 1.0, 0.0, 1.0)
 color_red   = (1.0, 0.0, 0.0, 1.0)
 
-freeze_version = ('0.5' in vispy.__version__) # temp hack ... ugly
-
-
 ### Jacobi surface equation (iso surface when jsurface(i, j, k) = 0)
 def jsurfacef(x, y, z):
     return 2.0*rt3 + np.sqrt(x*x+y*y+z*z) * (x*x - z*z/f - 3.0*rt2)
@@ -74,6 +71,8 @@ class StarVisual(visuals.Visual):
         # Init
         visuals.Visual.__init__(self, vcode=vs_stars, fcode=fs_stars)
 
+        self.unfreeze()
+
         # Blending
         self.set_gl_state('opaque', cull_face=False)
 
@@ -84,10 +83,8 @@ class StarVisual(visuals.Visual):
         self._draw_mode = 'points'
         self.shared_program.vert['position'] = self.vbo
 
-        if freeze_version:
-            self.freeze()
+        self.freeze()
         
-
     def _prepare_transforms(self, view):
         tr = view.transforms
         view_vert = view.view_program.vert
@@ -139,8 +136,7 @@ class JacobiDemoCanvas(scene.SceneCanvas):
     def __init__(self):
         scene.SceneCanvas.__init__(self, keys='interactive', size=(1280, 720), bgcolor='w')
 
-        if freeze_version:
-            self.unfreeze()
+        self.unfreeze()
         
         self.view = self.central_widget.add_view()
         
@@ -201,7 +197,7 @@ class JacobiDemoCanvas(scene.SceneCanvas):
         
         print('General setup')
         ##### Misc
-        self.anim_speed = 20
+        self.anim_speed = 15
 
         self.visuals.append(self.surface)
         self.visuals.append(self.x_wireframe)
